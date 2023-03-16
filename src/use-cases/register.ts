@@ -1,3 +1,4 @@
+import { UserWithSameEmailError } from './errors/user-with-same-email-error'
 import { UsersRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
 
@@ -16,7 +17,7 @@ export class RegisterUseCase {
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
     if (userWithSameEmail) {
-      throw new Error('E-mail already exists')
+      throw new UserWithSameEmailError()
     }
 
     await this.usersRepository.create({

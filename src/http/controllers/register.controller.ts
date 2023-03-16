@@ -1,3 +1,4 @@
+import { UserWithSameEmailError } from './../../use-cases/errors/user-with-same-email-error'
 import { PrismaUsersRepository } from '@/repositories/prisma/prisma-users-repository'
 import { RegisterUseCase } from '@/use-cases/register'
 import { FastifyReply, FastifyRequest } from 'fastify'
@@ -18,7 +19,8 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
   try {
     await registerUseCase.handle({ name, email, password })
   } catch (err) {
-    return reply.status(409).send()
+    if (err instanceof UserWithSameEmailError) return reply.status(409).send()
+    throw err
   }
 
   return reply.status(201).send()
