@@ -7,9 +7,9 @@ import { it, describe, expect } from 'vitest'
 describe('Register Use Case', () => {
   it('should be able to register', async () => {
     const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
+    const sut = new RegisterUseCase(usersRepository)
 
-    const { user } = await registerUseCase.handle({
+    const { user } = await sut.handle({
       name: 'Jhon Doe',
       email: 'jhondoe@example.com',
       password: '123456',
@@ -20,9 +20,9 @@ describe('Register Use Case', () => {
 
   it('should hash user password upon registration', async () => {
     const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
+    const sut = new RegisterUseCase(usersRepository)
 
-    const { user } = await registerUseCase.handle({
+    const { user } = await sut.handle({
       name: 'Jhon Doe',
       email: 'jhondoe@example.com',
       password: '123456',
@@ -38,18 +38,18 @@ describe('Register Use Case', () => {
 
   it('should not be able to register with same email twice', async () => {
     const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
+    const sut = new RegisterUseCase(usersRepository)
 
     const email = 'jhondoe@example.com'
 
-    await registerUseCase.handle({
+    await sut.handle({
       name: 'Jhon Doe',
       email,
       password: '123456',
     })
 
     await expect(() =>
-      registerUseCase.handle({
+      sut.handle({
         name: 'Jhon Doe',
         email,
         password: '123456',
