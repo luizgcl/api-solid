@@ -1,24 +1,26 @@
+import { UserWithSameEmailError } from './errors/user-with-same-email-error'
+import { InMemoryUsersRepository } from './../repositories/in-memory/in-memory-users-repository'
 import { RegisterUseCase } from '@/use-cases/register'
 import { compare } from 'bcryptjs'
 import { it, describe, expect } from 'vitest'
 
 describe('Register Use Case', () => {
-  it('should hash user password upon registration', async () => {
-    const registerUseCase = new RegisterUseCase({
-      async findByEmail() {
-        return null
-      },
+  it('should be able to register', async () => {
+    const usersRepository = new InMemoryUsersRepository()
+    const registerUseCase = new RegisterUseCase(usersRepository)
 
-      async create(data) {
-        return {
-          id: 'test-user-1',
-          name: data.name,
-          email: data.email,
-          password_hash: data.password_hash,
-          created_at: new Date(),
-        }
-      },
+    const { user } = await registerUseCase.handle({
+      name: 'Jhon Doe',
+      email: 'jhondoe@example.com',
+      password: '123456',
     })
+
+    expect(user.id).toEqual(expect.any(String))
+  })
+
+  it('should hash user password upon registration', async () => {
+    const usersRepository = new InMemoryUsersRepository()
+    const registerUseCase = new RegisterUseCase(usersRepository)
 
     const { user } = await registerUseCase.handle({
       name: 'Jhon Doe',
@@ -32,5 +34,26 @@ describe('Register Use Case', () => {
     )
 
     expect(isPasswordCorrectlyHashed).toBe(true)
+  })
+
+  it('should not be able to register with same email twice', async () => {
+    const usersRepository = new InMemoryUsersRepository()
+    const registerUseCase = new RegisterUseCase(usersRepository)
+
+    const email = 'jhondoe@example.com'
+
+    await registerUseCase.handle({
+      name: 'Jhon Doe',
+      email,
+      password: '123456',
+    })
+
+    expect(() =>
+      registerUseCase.handle({
+        name: 'Jhon Doe',
+        email,
+        password: '123456',
+      }),
+    ).rejects.toBeInstanceOf(UserWithSameEmailError)
   })
 })
