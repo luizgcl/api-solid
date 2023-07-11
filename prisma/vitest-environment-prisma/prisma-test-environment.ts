@@ -5,8 +5,6 @@ import { execSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { Environment } from 'vitest'
 
-const prisma = new PrismaClient()
-
 function generateDatabaseURL(schema: string) {
   if (!process.env.DATABASE_URL) {
     throw new Error('Please specify the DATABASE_URL environment variable')
@@ -27,8 +25,15 @@ export default <Environment>{
 
     process.env.DATABASE_URL = databaseURL
 
-    execSync('npx prisma generate')
     execSync('npx prisma migrate deploy')
+
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: databaseURL,
+        },
+      },
+    })
 
     return {
       async teardown() {
