@@ -35,4 +35,4 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: apisolid
-          DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
+          DATABASE_URL: postgresql://docker:docker@localhost:5432/apisolid?schema=public
