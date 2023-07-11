@@ -6,5 +6,8 @@ export default defineConfig({
   test: {
     environmentMatchGlobs: [['src/http/controllers/**', 'prisma']],
     dir: 'src',
+    environmentOptions: {
+      prismaEnvVarName: 'DATABASE_URL',
+    },
   },
 })
